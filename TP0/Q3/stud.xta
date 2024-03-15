@@ -6,6 +6,7 @@ const int emetteur = 1;
 const int recepteur = 0;
 
 process rc(const bool status, chan &send, chan &rec) {
+
 bool  master := status;
 int choice;
 state
@@ -16,18 +17,20 @@ state
 urgent
     receiver,
     sender,
-    verdict, 
+    verdict,
     idle;
-init idle;
+init
+    idle;
 trans
-    receiver -> idle { sync rec ?;},
-    sender -> idle { sync send !;},
-    idle -> sender {guard master == true; sync s!;},
-    idle -> receiver {guard master == true;},
-    idle -> verdict { guard master == false;},
-    verdict -> sender {},
-    verdict -> receiver {};
+    receiver -> idle { sync rec ?; assign master = not master; },
+    sender -> idle { sync send !; assign master = not master; },
+    idle -> sender { guard master == true; sync s!; assign vp = emetteur; },
+    idle -> receiver { guard master == true; sync s!; assign vp = recepteur; },
+    idle -> verdict { guard master == false; sync s?; assign choice = vp; },
+    verdict -> sender { guard choice == recepteur; },
+    verdict -> receiver { guard choice == emetteur; };
 }
+
 gauche := rc(true,a,b);
 droit :=  rc(false,b,a);
 

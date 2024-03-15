@@ -1,8 +1,6 @@
 process rc graphinfo {
-sync receiver AfterRecieve 1 (8,-8);
 location AfterRecieve (-88,-456);
 locationName AfterRecieve(24,-8);
-sync sender AfterSend 1 (-60,-15);
 location AfterSend (-352,-456);
 locationName AfterSend(-96,-8);
 location receiver (-88,-568);
@@ -11,4 +9,6 @@ location sender (-352,-568);
 locationName sender(-10,-30);
 location idle (-224,-568);
 locationName idle(-10,-30);
+sync receiver AfterRecieve 1 (8,-8);
+sync sender AfterSend 1 (-60,-15);
 }

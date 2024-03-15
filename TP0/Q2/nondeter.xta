@@ -17,15 +17,17 @@ urgent
     receiver,
     sender,
     idle;
-init idle;
+init
+    idle;
 trans
-    AfterRecieve -> idle {  },
-    AfterSend -> idle {  },
-    receiver -> AfterRecieve { sync rec ?;  },
-    sender -> AfterSend { sync send !;  },
-    idle -> sender {  },
-    idle -> receiver {  };
+    AfterRecieve -> idle { },
+    AfterSend -> idle { },
+    receiver -> AfterRecieve { sync rec ?; },
+    sender -> AfterSend { sync send !; },
+    idle -> sender { },
+    idle -> receiver { };
 }
+
 gauche := rc(a,b);
 droit :=  rc(b,a);
 system gauche, droit;
