@@ -1,0 +1,28 @@
+process rc graphinfo {
+location receiver (-408,-544);
+locationName receiver(-8,-32);
+location sender (64,-544);
+locationName sender(-8,-32);
+location verdict (-176,-360);
+locationName verdict(-24,24);
+location idle (-176,-544);
+locationName idle(-8,-32);
+trans receiver idle 1 (12,48);
+sync receiver idle 1 (4,24);
+assign receiver idle 1 (-76,0);
+trans sender idle 1 (-24,48);
+sync sender idle 1 (-40,24);
+assign sender idle 1 (-72,8);
+guard idle sender 1 (-56,-64);
+sync idle sender 1 (-288,-56);
+assign idle sender 1 (-56,-32);
+trans idle receiver 1 (60,0);
+guard idle receiver 1 (-52,-72);
+sync idle receiver 1 (180,-48);
+assign idle receiver 1 (-52,-40);
+guard idle verdict 1 (0,-28);
+sync idle verdict 1 (0,-12);
+assign idle verdict 1 (0,4);
+guard verdict sender 1 (-72,68);
+guard verdict receiver 1 (-68,68);
+}

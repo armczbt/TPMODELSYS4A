@@ -1,0 +1,31 @@
+/* Probleme du choix distant: Choix interne  */ 
+
+
+chan s, a, b, f;
+
+process rc(chan &send, chan &rec) {
+
+state
+    AfterRecieve,
+    AfterSend,
+    receiver,
+    sender,
+    idle;
+urgent
+    AfterRecieve,
+    AfterSend,
+    receiver,
+    sender,
+    idle;
+init idle;
+trans
+    AfterRecieve -> idle {  },
+    AfterSend -> idle {  },
+    receiver -> AfterRecieve { sync rec ?;  },
+    sender -> AfterSend { sync send !;  },
+    idle -> sender {  },
+    idle -> receiver {  };
+}
+gauche := rc(a,b);
+droit :=  rc(b,a);
+system gauche, droit;

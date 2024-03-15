@@ -1,0 +1,84 @@
+/* Probleme du choix distant: Choix via pile ou face  */ 
+
+/* Canaux Synchrones pour les communications site/voteur  */ 
+chan cleft, cright ;
+
+
+/*  Pour les fifos */ 
+chan LRGET, LRPUT;
+chan RLGET, RLPUT;
+int vp;
+
+process rc(chan & local, chan &in,chan &out) {
+int loc;
+state
+    idle,
+    wait,
+    sender,
+    receiver;
+urgent
+    idle,
+    wait,
+    sender,
+    receiver;
+init idle;
+trans
+    idle -> wait { sync local!;  },
+    wait -> receiver { sync local?;  },
+    wait -> sender { sync local!;  },
+    sender -> idle { sync out!; assign vp :=1;  },
+    receiver -> idle { sync in?; assign loc := vp;  };
+}
+
+process joueur(const bool equal, chan & local, chan &in,chan &out) {
+int[0,2] other, me ;
+bool winner;
+state
+    idle,
+    play,
+    rec,
+    verdict;
+urgent
+    idle,
+    play,
+    rec,
+    verdict;
+init idle;
+trans
+    idle -> play { sync local?;  },
+    play -> rec { select i : int[0,1];  },
+    rec -> verdict { sync in?;  },
+    verdict -> idle { sync local!;  },
+    verdict -> idle { sync local?;  };
+}
+
+process fifo(const int flux, const int cap,  chan & get, chan &put, int &vget, int &vput) {
+int cpt := 0;
+        int buf[cap];
+        int ixP := 0;
+        int ixG := 0;
+        int cdf := flux;
+state
+    service,
+    erreur;
+urgent
+    service,
+    erreur;
+init service;
+trans
+    service -> service { guard cpt > 0; sync get!; assign vget:= buf[ixG], 
+                cpt:= cpt - 1, ixG:= (ixG == (cap - 1))?0:(ixG + 1);  },
+    service -> service { guard cpt < cap; sync put?; assign buf[ixP]:= vput, cpt:= cpt + 1, 
+                ixP:= (ixP == (cap - 1))?0:(ixP + 1);  },
+    service -> erreur { guard cpt == cap and cdf == 0; sync put?;  };
+}
+FifoLR  := fifo(0,4,LRGET,LRPUT,vp,vp);
+FifoRL  := fifo(0,4,RLGET,RLPUT,vp,vp);
+
+joueurleft  := joueur(true,cleft,RLGET,LRPUT);
+gauche      := rc(cleft,RLGET,LRPUT);
+droit       :=  rc(cright,LRGET,RLPUT);
+joueurdroit := joueur(false,cright,LRGET,RLPUT);
+
+
+system joueurleft, gauche,FifoLR, FifoRL,  droit, joueurdroit;

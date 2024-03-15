@@ -1,0 +1,54 @@
+process rc graphinfo {
+location idle (40,80);
+locationName idle(-40,0);
+location wait (192,80);
+locationName wait(-10,-30);
+location sender (192,152);
+locationName sender(0,16);
+location receiver (192,-8);
+locationName receiver(-10,-30);
+sync idle wait 1 (-4,-16);
+sync wait receiver 1 (8,-12);
+sync wait sender 1 (16,4);
+trans sender idle 1 (-76,36);
+sync sender idle 1 (-76,44);
+assign sender idle 1 (-44,44);
+trans receiver idle 1 (-76,-44);
+sync receiver idle 1 (-76,-68);
+assign receiver idle 1 (-44,-68);
+}
+process joueur graphinfo {
+location idle (40,80);
+locationName idle(-10,-30);
+location play (190,80);
+locationName play(-10,-30);
+location rec (190,230);
+locationName rec(-14,18);
+location verdict (40,230);
+locationName verdict(-32,18);
+sync idle play 1 (-11,-16);
+trans play rec 1 (2,45);
+select play rec 1 (18,-43);
+sync rec verdict 1 (-60,-15);
+trans verdict idle 1 (-104,-19);
+sync verdict idle 1 (-72,-19);
+sync verdict idle 2 (8,-19);
+}
+process fifo graphinfo {
+location service (40,80);
+locationName service(-10,-30);
+location erreur (190,80);
+locationName erreur(-10,-30);
+trans service service 1 (-30,-30);
+trans service service 1 (30,-30);
+guard service service 1 (-60,-30);
+sync service service 1 (-60,-15);
+assign service service 1 (-60,0);
+trans service service 2 (-30,-30);
+trans service service 2 (30,-30);
+guard service service 2 (-60,-30);
+sync service service 2 (-60,-15);
+assign service service 2 (-60,0);
+guard service erreur 1 (-60,-30);
+sync service erreur 1 (-60,-15);
+}

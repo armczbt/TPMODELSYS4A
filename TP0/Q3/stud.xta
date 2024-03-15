@@ -1,0 +1,34 @@
+/* Probleme du choix distant: Choix interne  */
+
+chan s, a, b;
+int vp;
+const int emetteur = 1; 
+const int recepteur = 0;
+
+process rc(const bool status, chan &send, chan &rec) {
+bool  master := status;
+int choice;
+state
+    receiver,
+    sender,
+    verdict,
+    idle;
+urgent
+    receiver,
+    sender,
+    verdict, 
+    idle;
+init idle;
+trans
+    receiver -> idle { sync rec ?;},
+    sender -> idle { sync send !;},
+    idle -> sender {guard master == true; sync s!;},
+    idle -> receiver {guard master == true;},
+    idle -> verdict { guard master == false;},
+    verdict -> sender {},
+    verdict -> receiver {};
+}
+gauche := rc(true,a,b);
+droit :=  rc(false,b,a);
+
+system gauche, droit;
